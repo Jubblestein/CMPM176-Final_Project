@@ -24,6 +24,11 @@ class Play extends Phaser.Scene {
         this.load.image('negative_3', 'reasonablecrashout.png')
         this.load.image('negative_4', 'thedreadedeep.png')
         this.load.image('negative_5', 'afail.png')
+        this.load.image('intro', 'intro.png')
+        this.load.image('mental_health_0', 'mentalhealth0ending.png')
+        this.load.image('physical_health_0', 'physicalhealth0ending.png')
+        this.load.image('pass', 'passending.png')
+        this.load.image('fail', 'failending.png')
 
         this.load.spritesheet('mentalhealth', '250x50mentalhealthbar.png', {
             frameWidth: 250,
