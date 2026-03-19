@@ -9,21 +9,21 @@ class Play extends Phaser.Scene {
         this.load.image('postitnote', '250x250postitnote.png')
         this.load.image('day', '150x150day.png')
         this.load.image('night', '150x150night.png')
-        this.load.image('positive1', 'goodgrade.png')
-        this.load.image('positive2', 'fortitude.png')
-        this.load.image('positive3', 'leadership.png')
-        this.load.image('positive4', 'discipline.png')
-        this.load.image('positive5', 'playtest.png')
-        this.load.image('tradeoff1', 'comforteating.png')
-        this.load.image('tradeoff2', 'outonthetown.png')
-        this.load.image('tradeoff3', 'studysessionwithafriend.png')
-        this.load.image('tradeoff4', 'passionproject.png')
-        this.load.image('tradeoff5', 'acallfromhome.png')
-        this.load.image('negative1', 'afightbetweenfriends.png')
-        this.load.image('negative2', 'aroughday.png')
-        this.load.image('negative3', 'reasonablecrashout.png')
-        this.load.image('negative4', 'thedreadedeep.png')
-        this.load.image('negative5', 'afail.png')
+        this.load.image('positive_1', 'goodgrade.png')
+        this.load.image('positive_2', 'fortitude.png')
+        this.load.image('positive_3', 'leadership.png')
+        this.load.image('positive_4', 'discipline.png')
+        this.load.image('positive_5', 'playtest.png')
+        this.load.image('tradeoff_1', 'comforteating.png')
+        this.load.image('tradeoff_2', 'outonthetown.png')
+        this.load.image('tradeoff_3', 'studysessionwithafriend.png')
+        this.load.image('tradeoff_4', 'passionproject.png')
+        this.load.image('tradeoff_5', 'acallfromhome.png')
+        this.load.image('negative_1', 'afightbetweenfriends.png')
+        this.load.image('negative_2', 'aroughday.png')
+        this.load.image('negative_3', 'reasonablecrashout.png')
+        this.load.image('negative_4', 'thedreadedeep.png')
+        this.load.image('negative_5', 'afail.png')
 
         this.load.spritesheet('mentalhealth', '250x50mentalhealthbar.png', {
             frameWidth: 250,
@@ -101,18 +101,41 @@ class Play extends Phaser.Scene {
             wordWrap: { width: 150 }
         }
 
+        this.statsButtonConfig1 = {
+            fontFamily: 'Handwriting',
+            fontSize: '35px',
+            color: '#222222',
+            align: 'center',
+            wordWrap: { width: 150 }
+        }
+
+        this.statsButtonConfig2 = {
+            fontFamily: 'Handwriting',
+            fontSize: '25px',
+            color: '#727272',
+            align: 'center',
+            wordWrap: { width: 150 }
+        }
+
         this.add.text(-1000, -1000, '.', { fontFamily: 'Handwriting' }) // what's the purpose of this?
 
         this.eventsPerDay = 1
         this.daysRemaining = 5
-        this.days = this.add.text(360, 10, `${this.daysRemaining}`, { fontFamily: 'Handwriting', fontSize: '45px', color: '#333333'}).setDepth(1)
+        //this.days = this.add.text(360, 10, `${this.daysRemaining}`, { fontFamily: 'Handwriting', fontSize: '45px', color: '#333333'}).setDepth(1)
 
         document.fonts.ready.then(() => {
             this.add.text(120, 10, 'Days Until Exam:', this.textconfig)
+            this.days = this.add.text(360, 10, `${this.daysRemaining}`, { fontFamily: 'Handwriting', fontSize: '45px', color: '#333333'}).setDepth(1)
             this.add.text(120, 80, 'Mental Health:', this.textconfig)
             this.add.text(450, 80, 'Physical Health:', this.textconfig)
             this.add.text(230, 260, 'Exam Preparedness:', this.textconfig)
             this.add.text(577, 180, 'All work and \nno play makes \nJack a dull boy', this.textconfig)
+            this.add.text(200, 480, 'REST', this.statsButtonConfig1).setOrigin(0.5)
+            this.add.text(200, 515, '+mental', this.statsButtonConfig2).setOrigin(0.5)
+            this.add.text(425, 480, 'EXERCISE', this.statsButtonConfig1).setOrigin(0.5)
+            this.add.text(425, 515, '+physical', this.statsButtonConfig2).setOrigin(0.5)
+            this.add.text(650, 480, 'STUDY', this.statsButtonConfig1).setOrigin(0.5)
+            this.add.text(650, 515, '+prep', this.statsButtonConfig2).setOrigin(0.5)
         })
 
         this.background = this.add.tileSprite(0, 0, 800, 600, 'background').setOrigin(0).setDepth(0)
@@ -121,13 +144,14 @@ class Play extends Phaser.Scene {
         this.mentalhealth = this.add.sprite(230, 151, 'mentalhealth', 3)
         this.physicalhealth = this.add.sprite(570, 151, 'physicalhealth', 3)
         this.exampreparedness = this.add.sprite(360, 327, 'exampreparedness', 0)
+
         this.button1 = this.add.sprite(200, 495, 'button1', 0).setInteractive()
         this.button2 = this.add.sprite(425, 495, 'button2', 0).setInteractive()
         this.button3 = this.add.sprite(650, 495, 'button3', 0).setInteractive()
         //this.button4 = this.add.sprite(570, 550, 'button4', 0).setInteractive()
 
-        this.mentalhealthvalue = 0
-        this.physicalhealthvalue = 0
+        this.mentalhealthvalue = 3
+        this.physicalhealthvalue = 3
         this.exampreparednessvalue = 0
         this.eventActive = false
         this.currentEvent = null
@@ -326,17 +350,23 @@ class Play extends Phaser.Scene {
 
         this.button1.on('pointerdown', () => {
             if (this.eventActive) return
-            this.applyStatChange('mental', -1)
+            this.applyStatChange('mental', 1)
+            console.log('Adding 1 to mental...')
+            this.showRandomEvent()
         })
 
         this.button2.on('pointerdown', () => {
             if (this.eventActive) return
-            this.applyStatChange('mental', 1)
+            this.applyStatChange('physical', 1)
+            console.log('Adding 1 to physical...')
+            this.showRandomEvent()
         })
 
         this.button3.on('pointerdown', () => {
             if (this.eventActive) return
-            this.applyStatChange('physical', -1)
+            this.applyStatChange('prep', 1)
+            console.log('Adding 1 to prep...')
+            this.showRandomEvent()
         })
 
         /*
@@ -414,7 +444,7 @@ class Play extends Phaser.Scene {
         this.currentEvent = eventData
         this.eventActive = true
 
-        this.eventImage.setTexture(eventData.key)
+        this.eventImage.setTexture(eventData.key).setDisplaySize(150, 150)
         this.eventTitle.setText(eventData.title)
         this.eventBody.setText(eventData.body)
 
