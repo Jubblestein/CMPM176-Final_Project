@@ -71,6 +71,14 @@ class Play extends Phaser.Scene {
     }
 
     create() {
+        this.introTextConfig = {
+            fontFamily: 'Handwriting',
+            fontSize: '35px',
+            color: '#222222',
+            align: 'center',
+            wordWrap: { width: 750 }
+        }
+        
         this.textconfig = {
             fontFamily: 'Handwriting',
             fontSize: '35px',
@@ -124,13 +132,17 @@ class Play extends Phaser.Scene {
 
         this.add.text(-1000, -1000, '.', { fontFamily: 'Handwriting' }) // what's the purpose of this?
 
+        this.introImage = this.add.sprite(0, 0, 'intro').setDepth(100).setOrigin(0).setInteractive()
+
         this.eventsPerDay = 1
         this.daysRemaining = 5
         //this.days = this.add.text(360, 10, `${this.daysRemaining}`, { fontFamily: 'Handwriting', fontSize: '45px', color: '#333333'}).setDepth(1)
 
         document.fonts.ready.then(() => {
-            this.add.text(120, 10, 'Days Until Exam:', this.textconfig)
             this.days = this.add.text(360, 10, `${this.daysRemaining}`, { fontFamily: 'Handwriting', fontSize: '45px', color: '#333333'}).setDepth(1)
+            this.introText = this.add.text(50, 350, 'You are a college student, and the dreaded week of finals has crept up on you once again!\n\nCan you survive the week and pass your final exam?', this.introTextConfig).setOrigin(0).setDepth(100)
+            this.continueText = this.add.text(700, 550, '[click to continue]', this.eventBodyConfig).setOrigin(1, 0).setDepth(100)
+            this.add.text(120, 10, 'Days Until Exam:', this.textconfig)
             this.add.text(120, 80, 'Mental Health:', this.textconfig)
             this.add.text(450, 80, 'Physical Health:', this.textconfig)
             this.add.text(230, 260, 'Exam Preparedness:', this.textconfig)
@@ -153,9 +165,9 @@ class Play extends Phaser.Scene {
         this.physicalhealth = this.add.sprite(570, 151, 'physicalhealth', 3)
         this.exampreparedness = this.add.sprite(360, 327, 'exampreparedness', 0)
 
-        this.button1 = this.add.sprite(200, 495, 'button1', 0).setInteractive()
-        this.button2 = this.add.sprite(425, 495, 'button2', 0).setInteractive()
-        this.button3 = this.add.sprite(650, 495, 'button3', 0).setInteractive()
+        this.button1 = this.add.sprite(200, 495, 'button1', 0).setInteractive({ useHandCursor: true })
+        this.button2 = this.add.sprite(425, 495, 'button2', 0).setInteractive({ useHandCursor: true })
+        this.button3 = this.add.sprite(650, 495, 'button3', 0).setInteractive({ useHandCursor: true })
         //this.button4 = this.add.sprite(570, 550, 'button4', 0).setInteractive()
 
         this.mentalhealthvalue = 3
@@ -277,7 +289,7 @@ class Play extends Phaser.Scene {
                 title: 'A Fight between Friends',
                 body: 'Two of your friends are having a heated argument about something trivial. You try to mediate, but it quickly escalates. You say...',
                 options: [
-                    { text: 'Fuck this, this isn\'nt worth it.', mental: -2, physical: 0, prep: 1 },
+                    { text: 'Fuck this, this isn\'t worth it.', mental: -2, physical: 0, prep: 1 },
                     { text: 'Let\'s just fight. Winner is right.', mental: 0, physical: 1, prep: -2 },
                     { text: 'JUST SHUT UP! BOTH OF YOU!', mental: 1, physical: -2, prep: 0 },
                 ]
@@ -356,6 +368,12 @@ class Play extends Phaser.Scene {
         })
         */
 
+        this.introImage.on('pointerdown', () => {
+            this.introImage.setAlpha(0)
+            this.introText.setAlpha(0)
+            this.continueText.setAlpha(0)
+        })
+
         this.button1.on('pointerdown', () => {
             if (this.eventActive) return
             this.applyStatChange('mental', 1)
@@ -386,7 +404,7 @@ class Play extends Phaser.Scene {
 
         this.input.keyboard.on('keydown-R', () => {
             if (!this.eventActive) {
-                this.showRandomEvent()
+                //this.showRandomEvent()
             }
         })
     }
@@ -415,7 +433,7 @@ class Play extends Phaser.Scene {
 
         for (let i = 0; i < 3; i++) {
             const button = this.add.sprite(buttonXPositions[i], buttonY, 'button1', 0)
-                .setInteractive()
+                .setInteractive({ useHandCursor: true })
 
             const label = this.add.text(buttonXPositions[i], buttonY, `Option ${i + 1}`, this.eventButtonConfig)
                 .setOrigin(0.5)
