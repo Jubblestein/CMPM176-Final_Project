@@ -71,7 +71,7 @@ class Play extends Phaser.Scene {
     }
 
     create() {
-        this.introTextConfig = {
+        this.intro_endingTextConfig = {
             fontFamily: 'Handwriting',
             fontSize: '35px',
             color: '#222222',
@@ -140,23 +140,33 @@ class Play extends Phaser.Scene {
 
         document.fonts.ready.then(() => {
             this.days = this.add.text(360, 10, `${this.daysRemaining}`, { fontFamily: 'Handwriting', fontSize: '45px', color: '#333333'}).setDepth(1)
-            this.introText = this.add.text(50, 350, 'You are a college student, and the dreaded week of finals has crept up on you once again!\n\nCan you survive the week and pass your final exam?', this.introTextConfig).setOrigin(0).setDepth(100)
+            this.introText = this.add.text(50, 350, 'You are a college student, and the dreaded week of finals has crept up on you once again!\n\nCan you survive the week and pass your final exam?', this.intro_endingTextConfig).setOrigin(0).setDepth(100)
             this.continueText = this.add.text(700, 550, '[click to continue]', this.eventBodyConfig).setOrigin(1, 0).setDepth(100)
-            this.add.text(120, 10, 'Days Until Exam:', this.textconfig)
-            this.add.text(120, 80, 'Mental Health:', this.textconfig)
-            this.add.text(450, 80, 'Physical Health:', this.textconfig)
-            this.add.text(230, 260, 'Exam Preparedness:', this.textconfig)
-            this.add.text(577, 180, 'All work and \nno play makes \nJack a dull boy', this.textconfig)
-            this.add.text(200, 480, 'REST', this.statsButtonConfig1).setOrigin(0.5)
-            this.add.text(200, 515, '+mental', this.statsButtonConfig2).setOrigin(0.5)
-            this.add.text(425, 480, 'EXERCISE', this.statsButtonConfig1).setOrigin(0.5)
-            this.add.text(425, 515, '+physical', this.statsButtonConfig2).setOrigin(0.5)
-            this.add.text(650, 480, 'STUDY', this.statsButtonConfig1).setOrigin(0.5)
-            this.add.text(650, 515, '+prep', this.statsButtonConfig2).setOrigin(0.5)
+            this.MHEndingText = this.add.text(50, 350, 'You had a mental breakdown!\n\nYour loss of sense on reality prevented you from taking the test, so you failed. :(', this.intro_endingTextConfig).setOrigin(0).setAlpha(0).setDepth(100)
+            this.PHEndingText = this.add.text(50, 350, 'Your body literally disintegrated from the pressure!\n\nBelieve it or not; college students need to take care of themselves too!', this.intro_endingTextConfig).setOrigin(0).setAlpha(0).setDepth(100)
+            this.failEndingText = this.add.text(50, 350, 'Despite all your efforts, you failed your exam!\n\nGuess it\'s time to disappear into the woods forever!', this.intro_endingTextConfig).setOrigin(0).setAlpha(0).setDepth(100)
+            this.passEndingText = this.add.text(50, 350, 'You actually did it! YOU PASSED!!\n\nTime to celebrate surviving another finals week! Enjoy it while you can. ;)', this.intro_endingTextConfig).setOrigin(0).setAlpha(0).setDepth(100)
+            this.restartText = this.add.text(700, 550, '[click to restart]', this.eventBodyConfig).setOrigin(1, 0).setAlpha(0).setDepth(100)
+            this.daysUntilExam = this.add.text(120, 10, 'Days Until Exam:', this.textconfig)
+            this.mentalHealthText = this.add.text(120, 80, 'Mental Health:', this.textconfig)
+            this.physicalHealthText = this.add.text(450, 80, 'Physical Health:', this.textconfig)
+            this.examPreparednessText = this.add.text(230, 260, 'Exam Preparedness:', this.textconfig)
+            this.allWork = this.add.text(577, 180, 'All work and \nno play makes \nJack a dull boy', this.textconfig)
+            this.REST = this.add.text(200, 480, 'REST', this.statsButtonConfig1).setOrigin(0.5)
+            this.plusMental = this.add.text(200, 515, '+mental', this.statsButtonConfig2).setOrigin(0.5)
+            this.EXERCISE = this.add.text(425, 480, 'EXERCISE', this.statsButtonConfig1).setOrigin(0.5)
+            this.plusPhysical = this.add.text(425, 515, '+physical', this.statsButtonConfig2).setOrigin(0.5)
+            this.STUDY = this.add.text(650, 480, 'STUDY', this.statsButtonConfig1).setOrigin(0.5)
+            this.plusPrep = this.add.text(650, 515, '+prep', this.statsButtonConfig2).setOrigin(0.5)
         })
 
         this.background = this.add.tileSprite(0, 0, 800, 600, 'background').setOrigin(0).setDepth(0)
         this.postitnote = this.add.tileSprite(550, 169, 250, 250, 'postitnote').setOrigin(0).setDepth(0)
+
+        this.MHEndingImage = this.add.sprite(400, 25, 'mental_health_0').setOrigin(0.5, 0).setAlpha(0).setDepth(100).setInteractive().setScale(0.5)
+        this.PHEndingImage = this.add.sprite(400, 25, 'physical_health_0').setOrigin(0.5, 0).setAlpha(0).setDepth(100).setInteractive().setScale(0.5)
+        this.failEndingImage = this.add.sprite(400, 25, 'fail').setOrigin(0.5, 0).setAlpha(0).setDepth(100).setInteractive().setScale(0.5)
+        this.passEndingImage = this.add.sprite(400, 25, 'pass').setOrigin(0.5, 0).setAlpha(0).setDepth(100).setInteractive().setScale(0.5)
 
         this.currentFrame = 0
         this.sun_moonStages = this.add.sprite(440, 40, 'daytonight', 0).setOrigin(0.5).setDisplaySize(80, 80)
@@ -405,6 +415,8 @@ class Play extends Phaser.Scene {
         this.input.keyboard.on('keydown-R', () => {
             if (!this.eventActive) {
                 //this.showRandomEvent()
+                this.applyStatChange('mental', -1)
+                this.mentalHealthEnding()
             }
         })
     }
@@ -524,11 +536,11 @@ class Play extends Phaser.Scene {
         const selectedOption = this.currentEvent.options[optionIndex]
         if (!selectedOption) return
 
-        this.progressDay()
-
         this.applyStatChange('mental', selectedOption.mental || 0)
         this.applyStatChange('physical', selectedOption.physical || 0)
         this.applyStatChange('prep', selectedOption.prep || 0)
+
+        this.progressDay()
 
         console.log(
             `Selected option ${optionIndex + 1} for ${this.currentEvent.title}:`,
@@ -555,6 +567,40 @@ class Play extends Phaser.Scene {
             console.log("Game Won!")
             this.daysRemaining = 5
         } 
+    }
+
+    hideEverything () {
+       this.days.setAlpha(0)
+       this.daysUntilExam.setAlpha(0)
+       this.mentalHealthText.setAlpha(0)
+       this.physicalHealthText.setAlpha(0)
+       this.examPreparednessText.setAlpha(0)
+       this.allWork.setAlpha(0)
+       this.REST.setAlpha(0)
+       this.plusMental.setAlpha(0)
+       this.EXERCISE.setAlpha(0)
+       this.plusPhysical.setAlpha(0)
+       this.STUDY.setAlpha(0)
+       this.plusPrep.setAlpha(0)
+       this.postitnote.setAlpha(0)
+       this.sun_moonStages.setAlpha(0)
+       this.mentalhealth.setAlpha(0)
+       this.physicalhealth.setAlpha(0)
+       this.exampreparedness.setAlpha(0)
+       this.button1.setAlpha(0)
+       this.button2.setAlpha(0)
+       this.button3.setAlpha(0)
+    }
+
+    mentalHealthEnding () {
+        if (!this.mentalhealthvalue) {
+            this.hideEverything()
+            this.MHEndingImage.setAlpha(1)
+            this.MHEndingText.setAlpha(1)
+            this.restartText.setAlpha(1)
+            return true
+        }
+        return false
     }
 
     update() {
