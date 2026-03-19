@@ -9,17 +9,17 @@ class Play extends Phaser.Scene {
         this.load.image('postitnote', '250x250postitnote.png')
         this.load.image('day', '150x150day.png')
         this.load.image('night', '150x150night.png')
-        this.load.image('comforteat', 'comforteat.png')
-        this.load.image('study', 'study.png')
-        this.load.image('workout', 'workout.png')
-        this.load.image('bedrot', 'bedrot.png')
-        this.load.image('studyfailure', 'studyfailure.png')
-        this.load.image('smallinjury', 'smallinjury.png')
-        this.load.image('biginjury', 'biginjury.png')
-        this.load.image('bingeeat', 'bingeeat.png')
-        this.load.image('doomscroll', 'doomscroll.png')
-        this.load.image('laundry', 'laundry.png')
-        this.load.image('gethomeandcrash', 'gethomeandcrash.png')
+        this.load.image('comforteat', 'comforteat.jpg')
+        this.load.image('study', 'study.jpg')
+        this.load.image('workout', 'workout.jpg')
+        this.load.image('bedrot', 'bedrot.jpg')
+        this.load.image('studyfailure', 'studyfailure.jpg')
+        this.load.image('smallinjury', 'smallinjury.jpg')
+        this.load.image('biginjury', 'biginjury.jpg')
+        this.load.image('bingeeat', 'bingeeat.jpg')
+        this.load.image('doomscroll', 'doomscroll.jpg')
+        this.load.image('laundry', 'laundry.jpg')
+        this.load.image('gethomeandcrash', 'gethomeandcrash.jpg')
 
         this.load.spritesheet('mentalhealth', '250x50mentalhealthbar.png', {
             frameWidth: 250,
@@ -134,6 +134,7 @@ class Play extends Phaser.Scene {
                 ]
             },
             {
+                // this is very sweet :)
                 key: 'positive_2',
                 title: 'Fortitude',
                 body: 'It\'s easy to forget sometimes that you\'re doing all this for a reason. But now you remember...',
@@ -420,7 +421,7 @@ class Play extends Phaser.Scene {
             this.mentalhealthvalue = Phaser.Math.Clamp(
                 this.mentalhealthvalue + amount,
                 0,
-                this.mentalhealth.texture.frameTotal - 1
+                this.mentalhealth.texture.frameTotal - 2
             )
             this.mentalhealth.setFrame(this.mentalhealthvalue)
             return
@@ -430,7 +431,7 @@ class Play extends Phaser.Scene {
             this.physicalhealthvalue = Phaser.Math.Clamp(
                 this.physicalhealthvalue + amount,
                 0,
-                this.physicalhealth.texture.frameTotal - 1
+                this.physicalhealth.texture.frameTotal - 2
             )
             this.physicalhealth.setFrame(this.physicalhealthvalue)
             return
@@ -440,7 +441,7 @@ class Play extends Phaser.Scene {
             this.exampreparednessvalue = Phaser.Math.Clamp(
                 this.exampreparednessvalue + amount,
                 0,
-                this.exampreparedness.texture.frameTotal - 1
+                this.exampreparedness.texture.frameTotal - 2
             )
             this.exampreparedness.setFrame(this.exampreparednessvalue)
         }
