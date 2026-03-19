@@ -9,11 +9,11 @@ class Play extends Phaser.Scene {
         this.load.image('postitnote', '250x250postitnote.png')
         this.load.image('day', '150x150day.png')
         this.load.image('night', '150x150night.png')
-        this.load.image('positive1', 'goodgrade!.png')
+        this.load.image('positive1', 'goodgrade.png')
         this.load.image('positive2', 'fortitude.png')
         this.load.image('positive3', 'leadership.png')
         this.load.image('positive4', 'discipline.png')
-        this.load.image('positive5', 'playtest!.png')
+        this.load.image('positive5', 'playtest.png')
         this.load.image('tradeoff1', 'comforteating.png')
         this.load.image('tradeoff2', 'outonthetown.png')
         this.load.image('tradeoff3', 'studysessionwithafriend.png')
@@ -23,7 +23,7 @@ class Play extends Phaser.Scene {
         this.load.image('negative2', 'aroughday.png')
         this.load.image('negative3', 'reasonablecrashout.png')
         this.load.image('negative4', 'thedreadedeep.png')
-        this.load.image('negative5', 'afail?!.png')
+        this.load.image('negative5', 'afail.png')
 
         this.load.spritesheet('mentalhealth', '250x50mentalhealthbar.png', {
             frameWidth: 250,
