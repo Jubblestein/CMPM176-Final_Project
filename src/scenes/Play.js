@@ -141,6 +141,9 @@ class Play extends Phaser.Scene {
         this.background = this.add.tileSprite(0, 0, 800, 600, 'background').setOrigin(0).setDepth(0)
         this.postitnote = this.add.tileSprite(550, 169, 250, 250, 'postitnote').setOrigin(0).setDepth(0)
 
+        this.currentFrame = 0
+        this.sun_moonStages = this.add.sprite(440, 40, 'daytonight', 0).setOrigin(0.5).setDisplaySize(80, 80)
+
         this.mentalhealth = this.add.sprite(230, 151, 'mentalhealth', 3)
         this.physicalhealth = this.add.sprite(570, 151, 'physicalhealth', 3)
         this.exampreparedness = this.add.sprite(360, 327, 'exampreparedness', 0)
@@ -518,9 +521,12 @@ class Play extends Phaser.Scene {
             this.daysRemaining--
             this.days.text = `${this.daysRemaining}`
             this.eventsPerDay = 1
+            this.currentFrame = 0
         } else {
             this.eventsPerDay++
+            this.currentFrame = this.currentFrame + 2
         }
+        this.sun_moonStages.setFrame(this.currentFrame)
         
         if (!this.daysRemaining) {
             console.log("Game Won!")
