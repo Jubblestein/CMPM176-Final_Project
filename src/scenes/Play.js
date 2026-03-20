@@ -134,6 +134,7 @@ class Play extends Phaser.Scene {
 
         this.introImage = this.add.sprite(0, 0, 'intro').setDepth(100).setOrigin(0).setInteractive()
 
+        this.gameActive = true
         this.eventsPerDay = 1
         this.daysRemaining = 5
         //this.days = this.add.text(360, 10, `${this.daysRemaining}`, { fontFamily: 'Handwriting', fontSize: '45px', color: '#333333'}).setDepth(1)
@@ -146,7 +147,7 @@ class Play extends Phaser.Scene {
             this.PHEndingText = this.add.text(50, 350, 'Your body literally disintegrated from the pressure!\n\nBelieve it or not; college students need to take care of themselves too!', this.intro_endingTextConfig).setOrigin(0).setAlpha(0).setDepth(100)
             this.failEndingText = this.add.text(50, 350, 'Despite all your efforts, you failed your exam!\n\nGuess it\'s time to disappear into the woods forever!', this.intro_endingTextConfig).setOrigin(0).setAlpha(0).setDepth(100)
             this.passEndingText = this.add.text(50, 350, 'You actually did it! YOU PASSED!!\n\nTime to celebrate surviving another finals week! Enjoy it while you can. ;)', this.intro_endingTextConfig).setOrigin(0).setAlpha(0).setDepth(100)
-            this.restartText = this.add.text(700, 550, '[click to restart]', this.eventBodyConfig).setOrigin(1, 0).setAlpha(0).setDepth(100)
+            this.restartText = this.add.text(700, 550, '[press \'R\' to restart]', this.eventBodyConfig).setOrigin(1, 0).setAlpha(0).setDepth(100)
             this.daysUntilExam = this.add.text(120, 10, 'Days Until Exam:', this.textconfig)
             this.mentalHealthText = this.add.text(120, 80, 'Mental Health:', this.textconfig)
             this.physicalHealthText = this.add.text(450, 80, 'Physical Health:', this.textconfig)
@@ -413,10 +414,8 @@ class Play extends Phaser.Scene {
         */
 
         this.input.keyboard.on('keydown-R', () => {
-            if (!this.eventActive) {
-                //this.showRandomEvent()
-                this.applyStatChange('mental', -1)
-                this.mentalHealthEnding()
+            if (!this.gameActive) {
+                this.restartGame()
             }
         })
     }
@@ -540,7 +539,21 @@ class Play extends Phaser.Scene {
         this.applyStatChange('physical', selectedOption.physical || 0)
         this.applyStatChange('prep', selectedOption.prep || 0)
 
-        this.progressDay()
+        if (this.mentalHealthEnding()) {
+            this.gameActive = false
+            this.hideEverything()
+            this.MHEndingImage.setAlpha(1)
+            this.MHEndingText.setAlpha(1)
+            this.restartText.setAlpha(1)
+        } else if (this.physicalHealthEnding()) {
+            this.gameActive = false
+            this.hideEverything()
+            this.PHEndingImage.setAlpha(1)
+            this.PHEndingText.setAlpha(1)
+            this.restartText.setAlpha(1)
+        } else {
+            this.progressDay()
+        }
 
         console.log(
             `Selected option ${optionIndex + 1} for ${this.currentEvent.title}:`,
@@ -564,43 +577,105 @@ class Play extends Phaser.Scene {
         this.sun_moonStages.setFrame(this.currentFrame)
         
         if (!this.daysRemaining) {
-            console.log("Game Won!")
-            this.daysRemaining = 5
+            if (this.exampreparednessvalue >= 3) {
+                this.gameActive = false
+                this.hideEverything()
+                this.passEndingImage.setAlpha(1)
+                this.passEndingText.setAlpha(1)
+                this.restartText.setAlpha(1)
+            } else {
+                this.gameActive = false
+                this.hideEverything()
+                this.failEndingImage.setAlpha(1)
+                this.failEndingText.setAlpha(1)
+                this.restartText.setAlpha(1)
+            }
         } 
-    }
-
-    hideEverything () {
-       this.days.setAlpha(0)
-       this.daysUntilExam.setAlpha(0)
-       this.mentalHealthText.setAlpha(0)
-       this.physicalHealthText.setAlpha(0)
-       this.examPreparednessText.setAlpha(0)
-       this.allWork.setAlpha(0)
-       this.REST.setAlpha(0)
-       this.plusMental.setAlpha(0)
-       this.EXERCISE.setAlpha(0)
-       this.plusPhysical.setAlpha(0)
-       this.STUDY.setAlpha(0)
-       this.plusPrep.setAlpha(0)
-       this.postitnote.setAlpha(0)
-       this.sun_moonStages.setAlpha(0)
-       this.mentalhealth.setAlpha(0)
-       this.physicalhealth.setAlpha(0)
-       this.exampreparedness.setAlpha(0)
-       this.button1.setAlpha(0)
-       this.button2.setAlpha(0)
-       this.button3.setAlpha(0)
     }
 
     mentalHealthEnding () {
         if (!this.mentalhealthvalue) {
-            this.hideEverything()
-            this.MHEndingImage.setAlpha(1)
-            this.MHEndingText.setAlpha(1)
-            this.restartText.setAlpha(1)
             return true
         }
         return false
+    }
+
+    physicalHealthEnding () {
+        if (!this.physicalhealthvalue) {
+            return true
+        }
+        return false
+    }
+
+    restartGame () {
+        this.hideEverything()
+        this.daysRemaining = 5
+        this.days.text =this.daysRemaining
+        this.eventsPerDay = 1
+        this.sun_moonStages.setFrame(0)
+        this.mentalhealthvalue = 3
+        this.applyStatChange('mental', 0)
+        this.physicalhealthvalue = 3
+        this.applyStatChange('physical', 0)
+        this.exampreparednessvalue = 0
+        this.applyStatChange('prep', 0)
+        this.gameActive = true
+        this.showEverything()
+    }
+    
+    hideEverything () {
+        this.days.setAlpha(0)
+        this.daysUntilExam.setAlpha(0)
+        this.mentalHealthText.setAlpha(0)
+        this.physicalHealthText.setAlpha(0)
+        this.examPreparednessText.setAlpha(0)
+        this.allWork.setAlpha(0)
+        this.REST.setAlpha(0)
+        this.plusMental.setAlpha(0)
+        this.EXERCISE.setAlpha(0)
+        this.plusPhysical.setAlpha(0)
+        this.STUDY.setAlpha(0)
+        this.plusPrep.setAlpha(0)
+        this.postitnote.setAlpha(0)
+        this.sun_moonStages.setAlpha(0)
+        this.mentalhealth.setAlpha(0)
+        this.physicalhealth.setAlpha(0)
+        this.exampreparedness.setAlpha(0)
+        this.button1.setAlpha(0)
+        this.button2.setAlpha(0)
+        this.button3.setAlpha(0)
+        this.MHEndingImage.setAlpha(0)
+        this.MHEndingText.setAlpha(0)
+        this.PHEndingImage.setAlpha(0)
+        this.PHEndingText.setAlpha(0)
+        this.failEndingImage.setAlpha(0)
+        this.failEndingText.setAlpha(0)
+        this.passEndingImage.setAlpha(0)
+        this.passEndingText.setAlpha(0)
+        this.restartText.setAlpha(0)
+    }
+
+    showEverything () {
+        this.days.setAlpha(1)
+        this.daysUntilExam.setAlpha(1)
+        this.mentalHealthText.setAlpha(1)
+        this.physicalHealthText.setAlpha(1)
+        this.examPreparednessText.setAlpha(1)
+        this.allWork.setAlpha(1)
+        this.REST.setAlpha(1)
+        this.plusMental.setAlpha(1)
+        this.EXERCISE.setAlpha(1)
+        this.plusPhysical.setAlpha(1)
+        this.STUDY.setAlpha(1)
+        this.plusPrep.setAlpha(1)
+        this.postitnote.setAlpha(1)
+        this.sun_moonStages.setAlpha(1)
+        this.mentalhealth.setAlpha(1)
+        this.physicalhealth.setAlpha(1)
+        this.exampreparedness.setAlpha(1)
+        this.button1.setAlpha(1)
+        this.button2.setAlpha(1)
+        this.button3.setAlpha(1)
     }
 
     update() {
